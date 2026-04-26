@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MediaTracker</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- ── HEADER ─────────────────────────────────── -->
+    <header class="header">
+      <div class="logo">
+        <span class="logo-icon">▶</span>
+        <span class="logo-text">MediaTracker</span>
+      </div>
+      <div id="user-badge" class="user-badge hidden">
+        <span id="user-name"></span>
+        <button id="btn-logout" class="btn-icon" title="Çıkış Yap">✕</button>
+      </div>
+    </header>
+
+    <!-- ── GİRİŞ EKRANI ───────────────────────────── -->
+    <section id="screen-login" class="screen">
+      <p class="screen-desc">Devam etmek için giriş yapın.</p>
+      <div class="form-group">
+        <input id="input-email" type="email" placeholder="E-posta" class="input" autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <input id="input-password" type="password" placeholder="Şifre" class="input" autocomplete="current-password" />
+      </div>
+      <div id="login-error" class="error-msg hidden"></div>
+      <button id="btn-login" class="btn btn-primary">Giriş Yap</button>
+    </section>
+
+    <!-- ── ANA EKRAN ──────────────────────────────── -->
+    <section id="screen-main" class="screen hidden">
+
+      <!-- Platform algılama bandı -->
+      <div id="platform-bar" class="platform-bar hidden">
+        <span id="platform-icon">📺</span>
+        <div class="platform-info">
+          <div id="platform-name" class="platform-name"></div>
+          <div id="detected-title" class="platform-title"></div>
+        </div>
+        <button id="btn-use-detected" class="btn btn-sm btn-outline">Bunu Ara</button>
+      </div>
+
+      <!-- Arama -->
+      <div class="search-wrap">
+        <div class="search-row">
+          <input id="input-search" type="text" placeholder="Film veya dizi ara..." class="input" />
+          <button id="btn-search" class="btn btn-primary btn-sm">Ara</button>
+        </div>
+        <div id="search-results" class="search-results hidden"></div>
+      </div>
+
+      <!-- Seçili İçerik -->
+      <div id="selected-media" class="selected-media hidden">
+        <div class="media-card">
+          <img id="media-poster" src="" alt="" class="media-poster" />
+          <div class="media-info">
+            <div id="media-title" class="media-title"></div>
+            <div id="media-year" class="media-year"></div>
+            <div id="media-type-badge" class="media-type-badge"></div>
+          </div>
+        </div>
+
+        <!-- Durum Pill'leri -->
+        <div class="status-label">Durumunu Seç</div>
+        <div class="status-pills">
+          <button class="pill" data-status="watching">▶ İzleniyor</button>
+          <button class="pill" data-status="completed">✓ Tamamlandı</button>
+          <button class="pill" data-status="plan_to_watch">⏰ İzlenecekler</button>
+          <button class="pill" data-status="dropped">✕ Bırakıldı</button>
+        </div>
+
+        <!-- Puan -->
+        <div class="rating-wrap">
+          <span class="rating-label">Puanın (opsiyonel)</span>
+          <div class="stars" id="star-rating"></div>
+          <span id="rating-value" class="rating-value">—</span>
+        </div>
+
+        <!-- Kaldığın Süre -->
+        <div class="time-wrap">
+          <span class="rating-label">Kaldığın Süre (Dakika : Saniye)</span>
+          <div class="time-inputs">
+            <input type="number" id="input-minutes" min="0" placeholder="00" class="input input-sm" />
+            <span style="color:#64748b">:</span>
+            <input type="number" id="input-seconds" min="0" max="59" placeholder="00" class="input input-sm" />
+          </div>
+        </div>
+
+        <!-- Bölüm Seçenekleri (Sadece Dizi ve S/E varsa) -->
+        <div id="episode-section" class="episode-section hidden">
+          <div class="status-label">Bölüm Durumu: <span id="episode-badge" class="badge badge-tv">S0E0</span></div>
+          <label class="checkbox-wrap">
+            <input type="checkbox" id="checkbox-watched" />
+            <span>Bu bölümü izledim</span>
+          </label>
+        </div>
+
+        <!-- Kaydet -->
+        <button id="btn-save" class="btn btn-primary btn-full" disabled>Kaydet</button>
+        <div id="save-msg" class="save-msg hidden"></div>
+
+        <button id="btn-clear" class="btn btn-ghost btn-full">Temizle / Başka Ara</button>
+      </div>
+
+      <!-- İzleme Listesi Özeti -->
+      <div id="my-list-section" class="my-list-section">
+        <div class="section-title">Son Eklenenler</div>
+        <div id="my-list" class="my-list"></div>
+      </div>
+    </section>
+
+    <!-- ── LOADER ─────────────────────────────────── -->
+    <div id="loader" class="loader hidden">
+      <div class="spinner"></div>
+    </div>
+
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
