@@ -282,7 +282,7 @@
       if (/^\d+$/.test(lower)) continue; // Sadece sayı olanları atla
 
       let cleaned = seg
-        .replace(/[-_]?(?:sezon|season|bolum|episode|ep|s\d+e\d+|\d+[xe]\d+).*$/i, '')
+        .replace(/(?:[-_]?\d+)?[-_]?(?:sezon|season|bolum|episode|ep|s\d+e\d+|\d+[xe]\d+).*$/i, '')
         .replace(/[-_](hdfc|izle|altyazili|dublaj|full|hd|1080p|720p|4k).*$/i, '')
         .replace(/[-_]/g, ' ')
         .trim();
@@ -301,7 +301,7 @@
     return raw
       .replace(/\s*[|\-–—]\s*.+$/, '')           // sağdaki "| site adı" kaldır
       .replace(/\b(izle|watch|online|hd|4k|full|1080p|720p|türkçe|altyazılı|dublaj|dizipal)\b/gi, '')
-      .replace(/\s*(?:sezon|season|bölüm|bolum|episode|s\d+e\d+|\d+x\d+).*/i, '') // Sezon/bölüm kelimelerini ve sonrasını TAMAMEN kes
+      .replace(/\s*(?:\d+[\.\-\s]*)?(?:sezon|season|bölüm|bolum|episode|s\d+e\d+|\d+x\d+).*/i, '') // Sezon/bölüm kelimelerini ve öncesindeki sayıları kes
       .replace(/\s+/g, ' ')
       .trim();
   }

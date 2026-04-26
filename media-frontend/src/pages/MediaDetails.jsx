@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../api/axios';
-import { Star, Clock, CheckCircle, PlayCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Star, Clock, CheckCircle, PlayCircle, ChevronDown, ChevronUp, Play } from 'lucide-react';
+import TrailerModal from '../components/TrailerModal';
+import { useAlert } from '../context/AlertContext';
 
 // ─── Yıldız Puanlama Bileşeni ───────────────────────────────────────────────
 function StarRating({ value, onChange, readOnly = false, size = 'sm' }) {
@@ -53,6 +55,8 @@ export default function MediaDetails() {
   const [status, setStatus] = useState('');
   const [rating, setRating] = useState('');
   const [stoppedAt, setStoppedAt] = useState(null);
+  const [trailerModalOpen, setTrailerModalOpen] = useState(false);
+  const showAlert = useAlert();
 
   // Episode tracking state
   const [selectedSeason, setSelectedSeason] = useState(null);
@@ -114,13 +118,13 @@ export default function MediaDetails() {
 
   const handleUpdateProgress = async (e) => {
     e.preventDefault();
-    if (!status) return alert('Lütfen bir durum seçin');
+    if (!status) return showAlert('Lütfen bir durum seçin', 'error');
     try {
       await api.post(`/progress/${data.db_record.id}`, {
         status,
         rating: rating ? parseInt(rating) : null
       });
-      alert('İzleme durumu güncellendi!');
+      showAlert('İzleme durumu güncellendi!', 'success');
       
       if (type === 'tv') {
         const epRes = await api.get(`/progress/${data.db_record.id}/episodes`);
@@ -128,7 +132,7 @@ export default function MediaDetails() {
         calculateLastEpisode(epRes.data);
       }
     } catch (err) {
-      alert('Hata oluştu');
+      showAlert('Durum güncellenirken hata oluştu', 'error');
     }
   };
 
@@ -149,7 +153,7 @@ export default function MediaDetails() {
   // Tüm sezonu toplu olarak izlendi işaretle
   const markAllEpisodes = async (e, season) => {
     e.stopPropagation();
-    if (!data.db_record) return alert('Lütfen önce dizinin durumunu (İzleniyor vs) kaydedin!');
+    if (!data.db_record) return showAlert('Lütfen önce dizinin durumunu (İzleniyor vs) kaydedin!', 'error');
 
     let episodes = [];
     if (selectedSeason === season.season_number && seasonData?.episodes) {
@@ -159,7 +163,7 @@ export default function MediaDetails() {
         const res = await api.get(`/media/tv/${id}/season/${season.season_number}`);
         episodes = res.data?.episodes || [];
       } catch (err) {
-        return alert('Sezon bilgileri alınamadı.');
+        return showAlert('Sezon bilgileri alınamadı.', 'error');
       }
     }
 
@@ -167,7 +171,7 @@ export default function MediaDetails() {
 
     // Sadece yayınlanmış bölümleri filtrele
     const airedEpisodes = episodes.filter(ep => ep.air_date && new Date(ep.air_date) <= new Date());
-    if (airedEpisodes.length === 0) return alert('Bu sezonda henüz yayınlanmış bölüm yok.');
+    if (airedEpisodes.length === 0) return showAlert('Bu sezonda henüz yayınlanmış bölüm yok.', 'error');
 
     try {
       const results = await Promise.all(
@@ -191,8 +195,9 @@ export default function MediaDetails() {
       });
       setUserEpisodes(updatedEpisodes);
       calculateLastEpisode(updatedEpisodes);
+      showAlert('Tüm sezon işaretlendi.', 'success');
     } catch (err) {
-      alert('Bazı bölümler işaretlenemedi.');
+      showAlert('Bazı bölümler işaretlenemedi.', 'error');
     }
   };
 
@@ -222,8 +227,9 @@ export default function MediaDetails() {
       );
       setUserEpisodes(updatedEpisodes);
       calculateLastEpisode(updatedEpisodes);
+      showAlert('Sezondaki işaretler kaldırıldı.', 'success');
     } catch (err) {
-      alert('İşaret kaldırılamadı.');
+      showAlert('İşaret kaldırılamadı.', 'error');
     }
   };
 
@@ -238,7 +244,7 @@ export default function MediaDetails() {
 
   // Bölümü izlendi/izlenmedi + puan ile güncelle
   const markEpisode = async (season_number, episode_number, is_watched, episodeRating = null) => {
-    if (!data.db_record) return alert('Lütfen önce dizinin durumunu (İzleniyor vs) kaydedin!');
+    if (!data.db_record) return showAlert('Lütfen önce dizinin durumunu (İzleniyor vs) kaydedin!', 'error');
     try {
       const payload = { season_number, episode_number, is_watched };
       if (episodeRating !== null) payload.rating = episodeRating;
@@ -263,7 +269,7 @@ export default function MediaDetails() {
         }));
       }
     } catch (error) {
-      alert('Bölüm kaydedilemedi');
+      showAlert('Bölüm kaydedilemedi.', 'error');
     }
   };
 
@@ -297,6 +303,24 @@ export default function MediaDetails() {
 
   const tmdb = data.tmdb_data;
 
+  // Extract Providers (TR öncelikli, yoksa US)
+  let providers = [];
+  let providerRegion = '';
+  if (tmdb['watch/providers']?.results) {
+    let regionData = tmdb['watch/providers'].results.TR;
+    if (regionData) {
+      providerRegion = 'Türkiye';
+    } else {
+      regionData = tmdb['watch/providers'].results.US;
+      if (regionData) providerRegion = 'ABD';
+    }
+
+    if (regionData) {
+      providers = [...(regionData.flatrate || []), ...(regionData.free || []), ...(regionData.ads || [])];
+      providers = Array.from(new Map(providers.map(p => [p.provider_id, p])).values());
+    }
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex flex-col md:flex-row gap-8">
@@ -313,6 +337,44 @@ export default function MediaDetails() {
         <div className="flex-grow">
           <h1 className="text-4xl font-bold text-white mb-2">{tmdb.title || tmdb.name}</h1>
           <p className="text-zinc-400 text-lg mb-6">{tmdb.overview}</p>
+
+          {/* Fragman ve Platformlar */}
+          <div className="mb-8 flex flex-col sm:flex-row sm:items-center gap-6 bg-zinc-900/50 p-4 rounded-xl border border-zinc-800">
+            <button
+              onClick={() => setTrailerModalOpen(true)}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-brand-red text-white font-bold hover:bg-red-700 transition-all shadow-lg hover:shadow-brand-red/20"
+            >
+              <Play className="w-5 h-5 fill-current" /> Fragmanı İzle
+            </button>
+
+            {providers.length > 0 && (
+              <div className="flex-1">
+                <div className="text-xs text-zinc-500 font-semibold uppercase tracking-wider mb-2">
+                  Şu platformlarda yayında ({providerRegion}):
+                </div>
+                <div className="flex flex-wrap items-center gap-3">
+                  {providers.map(p => (
+                    <div key={p.provider_id} className="relative group">
+                      <img 
+                        src={`https://image.tmdb.org/t/p/original${p.logo_path}`} 
+                        alt={p.provider_name} 
+                        className="w-10 h-10 rounded-lg shadow-md border border-zinc-700 object-cover group-hover:scale-110 transition-transform"
+                      />
+                      <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/90 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap z-10 pointer-events-none">
+                        {p.provider_name}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {providers.length === 0 && (
+              <div className="flex-1 text-sm text-zinc-500">
+                Türkiye veya ABD'de resmi dijital platformda bulunamadı.
+              </div>
+            )}
+          </div>
 
           {lastEpisode && (
             <div className="mb-6 inline-flex items-center gap-2 bg-brand-blue/20 text-brand-blue px-4 py-2 rounded-lg font-bold border border-brand-blue/30">
@@ -540,6 +602,14 @@ export default function MediaDetails() {
           )}
         </div>
       </div>
+
+      <TrailerModal 
+        isOpen={trailerModalOpen}
+        onClose={() => setTrailerModalOpen(false)}
+        mediaType={type}
+        mediaId={id}
+        title={tmdb.title || tmdb.name}
+      />
     </div>
   );
 }

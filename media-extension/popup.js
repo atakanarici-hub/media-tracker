@@ -504,8 +504,16 @@ async function loadMyList() {
     return;
   }
 
-  // Son 4 eklenen
-  const items = res.data.slice(-4).reverse();
+  // Sadece izlenen ve izlenecek olanları filtrele
+  const filtered = res.data.filter(item => item.status === 'watching' || item.status === 'plan_to_watch');
+  
+  if (!filtered.length) {
+    myList.innerHTML = '<div style="color:#475569;font-size:12px;text-align:center;padding:8px">İzlenen veya izlenecek içerik bulunamadı.</div>';
+    return;
+  }
+
+  // Son 5 güncellenen/eklenen
+  const items = filtered.slice(0, 5); // Backend'den gelen sıra en yeni üstte olabilir. Eğer değilse: filtered.reverse().slice(0, 5);
   myList.innerHTML = '';
   items.forEach(item => {
     if (!item.media) return;

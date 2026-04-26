@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import api from '../api/axios';
 import { Link } from 'react-router-dom';
-import { PlayCircle, CheckCircle, Clock, XCircle, Star, ExternalLink, Trash2 } from 'lucide-react';
+import { PlayCircle, CheckCircle, Clock, XCircle, Star, ExternalLink, Trash2, Play } from 'lucide-react';
+import TrailerModal from '../components/TrailerModal';
+import { useAlert } from '../context/AlertContext';
 
 const STATUS_CONFIG = {
   watching:      { label: 'İzleniyor',     color: 'text-brand-blue',  icon: PlayCircle },
@@ -33,6 +35,8 @@ export default function Dashboard() {
   const [progressData, setProgressData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState('recent');
+  const [trailerModalData, setTrailerModalData] = useState({ isOpen: false, mediaType: null, mediaId: null, title: '' });
+  const showAlert = useAlert();
 
   useEffect(() => {
     const fetchProgress = async () => {
@@ -56,9 +60,10 @@ export default function Dashboard() {
     try {
       await api.delete(`/progress/${mediaId}`);
       setProgressData(prev => prev.filter(item => item.media_id !== mediaId));
+      showAlert('İçerik listeden kaldırıldı.', 'success');
     } catch (err) {
       console.error('Failed to delete progress', err);
-      alert('İçerik kaldırılırken bir hata oluştu.');
+      showAlert('İçerik kaldırılırken bir hata oluştu.', 'error');
     }
   };
 
@@ -194,26 +199,44 @@ export default function Dashboard() {
                     )}
 
                     {/* Alt satır: Butonlar */}
-                    <div className="flex items-center justify-between mt-1">
-                      {item.watch_url && item.status !== 'completed' ? (
-                        <a
-                          href={item.watch_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-blue/10 border border-brand-blue/30 text-brand-blue text-xs font-semibold hover:bg-brand-blue/20 transition-all duration-200"
-                          title={item.watch_url}
+                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-zinc-800/50">
+                      <div className="flex flex-wrap items-center gap-2">
+                        {item.watch_url && item.status !== 'completed' && (
+                          <a
+                            href={item.watch_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-brand-blue/10 border border-brand-blue/30 text-brand-blue text-xs font-semibold hover:bg-brand-blue/20 transition-all duration-200"
+                            title={item.watch_url}
+                          >
+                            <ExternalLink className="w-3 h-3" />
+                            <span>Devam</span>
+                          </a>
+                        )}
+
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setTrailerModalData({
+                              isOpen: true,
+                              mediaType: item.media.type,
+                              mediaId: item.media.tmdb_id,
+                              title: item.media.title
+                            });
+                          }}
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-300 text-xs font-semibold hover:bg-zinc-700 hover:text-white transition-all duration-200"
+                          title="Fragman ve Platformlar"
                         >
-                          <ExternalLink className="w-3 h-3" />
-                          <span>▶ Devam Et</span>
-                        </a>
-                      ) : (
-                        <div />
-                      )}
+                          <Play className="w-3 h-3 text-brand-red" />
+                          <span>Fragman</span>
+                        </button>
+                      </div>
 
                       <button
                         onClick={(e) => handleDelete(item.media_id, e)}
-                        className="p-1.5 rounded-lg text-zinc-500 hover:text-brand-red hover:bg-brand-red/10 transition-colors"
+                        className="p-1.5 rounded-lg text-zinc-500 hover:text-brand-red hover:bg-brand-red/10 transition-colors ml-2 flex-shrink-0"
                         title="Listeden Kaldır"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -226,6 +249,11 @@ export default function Dashboard() {
           })}
         </div>
       )}
+
+      <TrailerModal 
+        {...trailerModalData} 
+        onClose={() => setTrailerModalData(prev => ({ ...prev, isOpen: false }))} 
+      />
     </div>
   );
 }

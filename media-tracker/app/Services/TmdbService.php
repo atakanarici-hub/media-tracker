@@ -31,7 +31,9 @@ class TmdbService
         // Type should be 'movie' or 'tv'
         $response = Http::get("{$this->baseUrl}/{$type}/{$tmdbId}", [
             'api_key' => $this->apiKey,
-            'language' => 'tr-TR'
+            'language' => 'tr-TR',
+            'append_to_response' => 'videos,watch/providers',
+            'include_video_language' => 'tr,en,en-US'
         ]);
 
         return $response->json();

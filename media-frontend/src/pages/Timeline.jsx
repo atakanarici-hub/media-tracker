@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import api from '../api/axios';
 import { MessageSquare, Send } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAlert } from '../context/AlertContext';
 
 export default function Timeline() {
   const [posts, setPosts] = useState([]);
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
+  const showAlert = useAlert();
 
   const fetchPosts = async () => {
     try {
@@ -29,7 +31,7 @@ export default function Timeline() {
       setContent('');
       fetchPosts();
     } catch (err) {
-      alert('Paylaşılamadı');
+      showAlert('Gönderi paylaşılamadı.', 'error');
     }
   };
 

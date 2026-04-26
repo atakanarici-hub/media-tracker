@@ -1,93 +1,74 @@
-# 🎬 Media Tracker Projesi
+# 🎬 Media Tracker
 
-Media Tracker, izlediğiniz dizi ve filmlerin kaydını tutabileceğiniz, TMDB entegrasyonlu ve Chrome Eklentisi destekli gelişmiş bir takip platformudur. 
+Media Tracker, kullanıcıların izledikleri film ve dizileri organize edebildiği ve izleme ilerlemesini otomatik olarak takip edebildiği bir web uygulamasıdır. Proje, modern web teknolojileri ile geliştirilmiş olup özellikle tarayıcı eklentisi ile sağladığı otomatik izleme takibi özelliğiyle öne çıkar.
 
-En dikkat çekici özelliği olan **Akıllı Chrome Eklentisi** sayesinde; Netflix, Prime Video veya resmi olmayan oynatıcılar (iframe kullanan siteler) fark etmeksizin izlediğiniz videoyu otomatik algılar. Videoyu duraklattığınızda veya sekmeyi kapattığınızda, videonun **hangi saniyesinde kaldığınızı otomatik olarak sunucuya kaydeder**.
+Platform, The Movie Database (TMDB) entegrasyonu sayesinde geniş bir içerik kütüphanesine erişim sağlar. Kullanıcılar içerikleri kolayca ekleyebilir, kategorize edebilir ve izleme geçmişlerini detaylı şekilde yönetebilir.
 
-## 🚀 Özellikler
+En kritik bileşen olan Chrome eklentisi, farklı video oynatıcılarıyla uyumlu çalışarak kullanıcı müdahalesine gerek kalmadan izleme ilerlemesini takip eder. Video durdurulduğunda veya sekme kapatıldığında, izleme noktası otomatik olarak backend’e iletilir.
 
-- **TMDB Entegrasyonu:** Dünyadaki tüm film ve dizileri anında arayıp sisteminize ekleyebilirsiniz.
-- **Kapsamlı Dashboard:** İzlediklerinizi duruma (İzleniyor, Tamamlandı vs.), puana, isme veya tarihe göre sıralayabilirsiniz.
-- **Akıllı Süre Takibi (Event-Driven):** Chrome eklentisi körleme tarama yapmaz; doğrudan video oynatıcının `play`, `pause` ve `timeupdate` olaylarını dinler. Çok düşük sistem kaynağı tüketir.
-- **İframe Desteği:** Resmi olmayan yayıncıların kullandığı "pencere içi pencere" (iframe) oynatıcılara sızarak süreyi kusursuz hesaplar (`all_frames: true` mimarisi).
-- **Akıllı Bölüm Atlatma:** Dizi izlerken bir bölümü "Tamamlandı" işaretlediğinizde, otomatik olarak bir sonraki bölümü listeye alır. Tamamlanan içeriklerin sürelerini otomatik sıfırlar.
+---
+
+## 🚀 Öne Çıkan Özellikler
+
+- Otomatik İzleme Takibi: Video oynatıcı event’leri üzerinden çalışan sistem, izleme ilerlemesini gerçek zamanlı olarak kaydeder.
+- Platform Bağımsız Çalışma: Netflix, Prime Video ve iframe tabanlı oynatıcılarla uyumlu çalışır.
+- Gelişmiş Dashboard: İçerikler; durum, puan, tarih ve isim gibi kriterlere göre filtrelenebilir ve sıralanabilir.
+- Akıllı Bölüm Yönetimi: Dizi içeriklerinde bölüm ilerlemesi otomatik olarak yönetilir.
+- Düşük Kaynak Tüketimi: Event-driven mimari sayesinde gereksiz işlem yükü oluşturmaz.
+
+---
 
 ## 🛠️ Kullanılan Teknolojiler
-
-- **Backend:** PHP 8, Laravel 11, Sanctum (API Güvenliği), SQLite/MySQL
-- **Frontend:** React, Vite, Tailwind CSS, React Router, Lucide Icons
-- **Eklenti (Extension):** JavaScript (ES6), Chrome Manifest V3, Service Workers
-
----
-
-## ⚙️ Kurulum Rehberi
-
-Proje üç ayrı parçadan oluşmaktadır: Backend (API), Frontend (Arayüz) ve Extension (Eklenti). Hepsini çalıştırmak için aşağıdaki adımları sırasıyla izleyin.
-
-### 1. Backend Kurulumu (Laravel)
-Bu bölüm veritabanını ve API sunucusunu ayağa kaldırır.
-
-1. `media-tracker` klasörüne girin:
-   ```bash
-   cd media-tracker
-   ```
-2. Gerekli kütüphaneleri yükleyin:
-   ```bash
-   composer install
-   ```
-3. Çevre değişkenleri dosyasını oluşturun:
-   ```bash
-   cp .env.example .env
-   ```
-4. `.env` dosyasını açıp TMDB API anahtarınızı girin:
-   ```env
-   TMDB_API_KEY=senin_tmdb_api_anahtarin
-   ```
-5. Uygulama şifreleme anahtarını (App Key) oluşturun:
-   ```bash
-   php artisan key:generate
-   ```
-6. Veritabanı tablolarını oluşturun:
-   ```bash
-   php artisan migrate
-   ```
-7. Sunucuyu başlatın:
-   ```bash
-   php artisan serve
-   ```
-   *Sunucu `http://127.0.0.1:8000` adresinde çalışmaya başlayacaktır.*
+Backend: PHP 8, Laravel 11, Sanctum, SQLite / MySQL
+Frontend: React, Vite, Tailwind CSS, React Router
+Extension: JavaScript (ES6), Chrome Manifest V3
 
 ---
 
-### 2. Frontend Kurulumu (React/Vite)
-Kullanıcı arayüzünü ayağa kaldırır.
+## ⚙️ Kurulum
 
-1. Yeni bir terminal açın ve `media-frontend` klasörüne girin:
-   ```bash
-   cd media-frontend
-   ```
-2. Gerekli kütüphaneleri yükleyin:
-   ```bash
-   npm install
-   ```
-3. Geliştirme sunucusunu başlatın:
-   ```bash
-   npm run dev
-   ```
-   *Site `http://localhost:5173` adresinde yayına girecektir. Tarayıcınızdan bu adrese giderek uygulamayı kullanabilirsiniz.*
+Proje üç ana bileşenden oluşur: backend, frontend ve browser extension.
+
+### Backend
+
+cd media-tracker
+composer install
+cp .env.example .env
+
+.env içerisine TMDB API key eklenir:
+
+TMDB_API_KEY=your_api_key
+
+Devamında:
+
+php artisan key:generate
+php artisan migrate
+php artisan serve
 
 ---
 
-### 3. Chrome Eklentisi Kurulumu (Extension)
-Videolardaki süreyi otomatik takip eden eklentinin kurulumu.
+### Frontend
 
-1. Chrome veya Brave tarayıcınızda adres çubuğuna şunu yazın ve Enter'a basın: 
-   `chrome://extensions/`
-2. Sağ üst köşedeki **Geliştirici Modu (Developer mode)** anahtarını açık hale getirin.
-3. Sol üstte beliren **"Paketlenmemiş öğe yükle" (Load unpacked)** butonuna tıklayın.
-4. Karşınıza çıkan dosya seçici ekranda, projenin içindeki `media-extension` klasörünü seçin.
-5. Eklenti tarayıcınıza kurulacaktır. 
-6. Eklentiler menüsünden (yapboz ikonu) Media Tracker'ı sabitleyerek rahatça kullanabilirsiniz.
+cd media-frontend
+npm install
+npm run dev
+
+---
+
+### Chrome Extension
+
+- chrome://extensions/ adresine gidilir
+- Developer Mode aktif edilir
+- “Load unpacked” ile media-extension klasörü yüklenir
+
+---
+
+## 📌 Proje Amacı
+
+Bu proje, modern web geliştirme süreçlerini uçtan uca deneyimlemek amacıyla geliştirilmiştir. Backend, frontend ve browser extension entegrasyonunu tek bir ekosistem içinde birleştirerek gerçek dünya senaryolarına yakın bir çözüm sunar.
+
+---
 
 ## 📝 Lisans
-Bu proje açık kaynaklıdır ve eğitim/portföy amacıyla geliştirilmiştir. İstediğiniz gibi çatallayabilir (fork) ve geliştirebilirsiniz.
+
+Açık kaynaklıdır. Eğitim ve geliştirme amaçlı kullanılabilir.

@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import api from '../api/axios';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search as SearchIcon, Film, Tv, X, Star, SlidersHorizontal, ChevronDown } from 'lucide-react';
+import { Search as SearchIcon, Film, Tv, X, Star, SlidersHorizontal, ChevronDown, Play } from 'lucide-react';
+import TrailerModal from '../components/TrailerModal';
 
 // ─── Debounce Hook ────────────────────────────────────────────────────────────
 function useDebounce(value, delay) {
@@ -40,6 +41,7 @@ export default function Search() {
   const [suggestLoading, setSuggestLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [trailerModalData, setTrailerModalData] = useState({ isOpen: false, mediaType: null, mediaId: null, title: '' });
 
   // Filtre & Sıralama state
   const [filterType, setFilterType] = useState('all');       // all | movie | tv
@@ -387,6 +389,24 @@ export default function Search() {
                   <Star className="w-3 h-3 fill-current" /> {item.vote_average.toFixed(1)}
                 </div>
               )}
+              {/* Fragman Butonu (Hover) */}
+              <div 
+                className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setTrailerModalData({
+                    isOpen: true,
+                    mediaType: item.media_type,
+                    mediaId: item.id,
+                    title: item.title || item.name
+                  });
+                }}
+              >
+                <div className="w-12 h-12 rounded-full bg-brand-red/90 flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-all duration-300">
+                  <Play className="w-5 h-5 text-white ml-1" />
+                </div>
+              </div>
             </div>
             <div className="p-3">
               <h3 className="font-semibold text-sm text-white truncate" title={item.title || item.name}>{item.title || item.name}</h3>
@@ -395,6 +415,10 @@ export default function Search() {
           </Link>
         ))}
       </div>
+      <TrailerModal 
+        {...trailerModalData} 
+        onClose={() => setTrailerModalData(prev => ({ ...prev, isOpen: false }))} 
+      />
     </div>
   );
 }
