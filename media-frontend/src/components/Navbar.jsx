@@ -26,7 +26,22 @@ export default function Navbar() {
           <div className="flex items-center gap-4">
             {user ? (
               <div className="flex items-center gap-4">
-                <span className="text-sm text-zinc-300">Merhaba, <span className="text-brand-blue font-semibold">{user.name}</span></span>
+                <div className="flex items-center gap-2">
+                  <Link to="/profile" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                    <div className="w-8 h-8 bg-zinc-700 rounded-full overflow-hidden flex items-center justify-center text-white font-bold text-sm shrink-0 border border-zinc-600">
+                      {user.profile_picture ? (
+                        <img 
+                          src={`http://localhost:8000/storage/${user.profile_picture}`} 
+                          alt={user.name} 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        user.name?.charAt(0)?.toUpperCase() || '?'
+                      )}
+                    </div>
+                    <span className="text-sm text-zinc-300 hidden sm:block">Merhaba, <span className="text-brand-blue font-semibold">{user.name}</span></span>
+                  </Link>
+                </div>
                 <button onClick={logout} className="text-brand-red hover:text-red-400 p-2 rounded-full hover:bg-zinc-800 transition-colors" title="Çıkış Yap">
                   <LogOut className="w-5 h-5" />
                 </button>

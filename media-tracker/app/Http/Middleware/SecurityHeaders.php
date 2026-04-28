@@ -19,11 +19,11 @@ class SecurityHeaders
         $response->headers->set(
             'Content-Security-Policy',
             "default-src 'self'; " .
-            "img-src 'self' https://image.tmdb.org data:; " .
+            "img-src 'self' http://localhost:8000 https://image.tmdb.org data: blob:; " .
             "script-src 'self'; " .
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " .
             "font-src 'self' https://fonts.gstatic.com; " .
-            "connect-src 'self'; " .
+            "connect-src 'self' http://localhost:8000; " .
             "frame-ancestors 'none';"
         );
 

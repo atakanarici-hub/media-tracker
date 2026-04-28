@@ -7,9 +7,15 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $posts = Post::with(['user:id,name,profile_picture', 'media'])->latest()->paginate(20);
+        $query = Post::with(['user:id,name,profile_picture', 'media'])->latest();
+        
+        if ($request->has('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        $posts = $query->paginate(20);
         return response()->json($posts);
     }
 

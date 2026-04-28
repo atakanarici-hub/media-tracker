@@ -119,6 +119,7 @@ export default function MediaDetails() {
   const handleUpdateProgress = async (e) => {
     e.preventDefault();
     if (!status) return showAlert('Lütfen bir durum seçin', 'error');
+    if (!data.db_record) return showAlert('İçerik kaydedilemedi. Lütfen giriş yaptığınızdan emin olun.', 'error');
     try {
       await api.post(`/progress/${data.db_record.id}`, {
         status,

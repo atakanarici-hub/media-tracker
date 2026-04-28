@@ -13,7 +13,9 @@ export default function Timeline() {
   const fetchPosts = async () => {
     try {
       const res = await api.get('/posts');
-      setPosts(res.data);
+      // If the backend returns paginated data, the actual posts are in res.data.data
+      const fetchedPosts = res.data.data ? res.data.data : res.data;
+      setPosts(Array.isArray(fetchedPosts) ? fetchedPosts : []);
     } catch (e) {} finally {
       setLoading(false);
     }
@@ -60,8 +62,16 @@ export default function Timeline() {
           {posts.map(post => (
             <div key={post.id} className="card p-5">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 bg-zinc-700 rounded-full flex items-center justify-center text-white font-bold">
-                  {post.user?.name.charAt(0).toUpperCase()}
+                <div className="w-10 h-10 bg-zinc-700 rounded-full flex items-center justify-center text-white font-bold overflow-hidden shrink-0">
+                  {post.user?.profile_picture ? (
+                    <img 
+                      src={`http://localhost:8000/storage/${post.user.profile_picture}`} 
+                      alt={post.user?.name} 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    post.user?.name?.charAt(0)?.toUpperCase() || '?'
+                  )}
                 </div>
                 <div>
                   <div className="font-semibold text-white">{post.user?.name}</div>

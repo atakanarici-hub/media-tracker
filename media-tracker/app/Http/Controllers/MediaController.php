@@ -38,7 +38,7 @@ class MediaController extends Controller
 
         // Only persist to the local DB when the caller is authenticated.
         // Unauthenticated callers get a pure TMDB proxy — no DB writes.
-        $details = $this->mediaService->getDetails($type, $id, auth()->check());
+        $details = $this->mediaService->getDetails($type, $id, auth('sanctum')->check());
         return response()->json($details);
     }
 
