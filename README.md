@@ -1,78 +1,97 @@
-# 🎬 Media Tracker - Full Stack Media Management Platform
+# 🎬 Media Tracker
+Kişisel film ve dizi izleme listenizi yönetebileceğiniz, izleme durumunuzu güncelleyebileceğiniz ve toplulukla paylaşım yapabileceğiniz modern bir medya takip platformu.
 
-Modern bir film, dizi ve medya takip platformu. Bu depo (repository), platformun tüm bileşenlerini (Backend, Frontend ve Chrome Uzantısı) içermektedir.
+## 🚀 Özellikler
+- **TMDB Entegrasyonu:** Milyonlarca film ve diziye anında erişim.
+- **İzleme Takibi:** İzleniyor, Tamamlandı, İzlenecekler ve Bırakıldı durum yönetimi.
+- **Bölüm Takibi:** Diziler için sezon ve bölüm bazlı ilerleme kaydı.
+- **Profil Yönetimi:** Kişisel biyografi, favori türler ve profil fotoğrafı.
+- **Zaman Tüneli:** Diğer kullanıcıların neler izlediğini görme ve paylaşım yapma.
+- **Chrome Uzantısı:** İzlediğiniz platformlardan (Netflix vb.) otomatik veri yakalama.
 
----
+## 📋 Ön Gereksinimler
+Kuruluma başlamadan önce sisteminizde şunların yüklü olduğundan emin olun:
 
-## 🏗️ Proje Yapısı
+- PHP 8.2 veya üzeri
+- Composer (PHP bağımlılık yöneticisi)
+- Node.js (v18+) & npm
+- MySQL veya MariaDB
 
-Bu proje üç ana bölümden oluşmaktadır:
-
-1.  **[media-tracker](./media-tracker):** Laravel (PHP) tabanlı REST API Backend.
-2.  **[media-frontend](./media-frontend):** React + Vite tabanlı modern Web Frontend.
-3.  **[media-extension](./media-extension):** Netflix, Prime Video gibi platformlardan otomatik veri çeken Chrome Uzantısı.
-
----
-
-## 🚀 Temel Özellikler
-
--   **TMDB Entegrasyonu:** Milyonlarca film ve dizi verisine anında erişim.
--   **İzleme Durumu:** İzleniyor, Tamamlandı, Planlandı ve Bırakıldı durum yönetimi.
--   **Bölüm Bazlı Takip:** Diziler için sezon ve bölüm bazlı detaylı ilerleme.
--   **Profil & Zaman Tüneli:** Kişisel biyografi, favori türler ve sosyal paylaşım akışı.
--   **Otomatik Tespit:** Chrome uzantısı ile izlediğiniz içeriği otomatik olarak listenize ekleme.
-
----
-
-## 📋 Sistem Gereksinimleri
-
--   **PHP:** 8.2+
--   **Node.js:** 18+ (npm ile birlikte)
--   **Composer:** Laravel bağımlılıkları için.
--   **Veritabanı:** MySQL veya MariaDB.
--   **API Key:** Bir [TMDB API Key](https://www.themoviedb.org/settings/api) gereklidir.
-
----
-
-## 🛠️ Kurulum ve Çalıştırma
-
-### 1. Backend (Laravel) Kurulumu
+## 🛠️ Kurulum Adımları
+### 1. Projeyi Klonlayın
 ```bash
+git clone <repo-url>
 cd media-tracker
+```
+
+### 2. Backend (Laravel) Kurulumu
+```bash
+# Bağımlılıkları yükleyin
 composer install
+# .env dosyasını oluşturun
 cp .env.example .env
+# Uygulama anahtarını oluşturun
 php artisan key:generate
 ```
-`.env` dosyasında veritabanı ayarlarınızı ve `TMDB_API_KEY` alanını güncelleyin.
+**.env Ayarları:** `.env` dosyasını bir metin editörüyle açın ve şu alanları güncelleyin:
+- DB_DATABASE, DB_USERNAME, DB_PASSWORD: Veritabanı bilgileriniz.
+- TMDB_API_KEY: TMDB üzerinden aldığınız API anahtarı.
+
 ```bash
+# Veritabanı tablolarını oluşturun
 php artisan migrate
+# Dosya yüklemeleri için sembolik link oluşturun
 php artisan storage:link
-php artisan serve
 ```
 
-### 2. Frontend (React) Kurulumu
-Yeni bir terminalde:
+### 3. Frontend (React) Kurulumu
+Yeni bir terminal açın ve projenin ana dizinine gidin:
 ```bash
 cd media-frontend
 npm install
+```
+
+## 🖥️ Çalıştırma
+
+### Linux (Ubuntu/Debian)
+**Backend:**
+```bash
+php artisan serve
+```
+**Frontend:**
+```bash
+cd media-frontend
 npm run dev
 ```
 
-### 3. Chrome Uzantısı Kurulumu
-1.  `chrome://extensions/` adresine gidin.
-2.  "Geliştirici Modu"nu (Developer Mode) aktif edin.
-3.  "Paketlenmemiş öğe yükle" (Load unpacked) butonuna tıklayın.
-4.  Bu projedeki `media-extension` klasörünü seçin.
+### Windows
+**Backend:** PowerShell veya CMD üzerinden:
+```powershell
+php artisan serve
+```
+**Frontend:** Yeni bir terminalde:
+```powershell
+cd media-frontend
+npm run dev
+```
 
----
+Uygulama varsayılan olarak http://localhost:5173 adresinde çalışacaktır. Backend ise http://localhost:8000 adresinde hizmet verir.
 
-## ⚠️ Sorun Giderme
+## ⚠️ Önemli Notlar & Sorun Giderme
+### Yüksek Boyutlu Profil Fotoğrafı Yükleme
+Eğer büyük boyutlu fotoğraflar yüklerken hata alıyorsanız, PHP ayarlarınızı (php.ini) güncellemeniz gerekebilir:
 
--   **Dosya Yükleme Limitleri:** Büyük profil fotoğrafları için `php.ini` dosyanızda `upload_max_filesize` ve `post_max_size` değerlerini (örneğin 10M) artırın.
--   **CORS Hataları:** Frontend (`localhost:5173`) ile Backend (`localhost:8000`) arasındaki iletişimi sağlamak için `.env` içindeki `SANCTUM_STATEFUL_DOMAINS` ayarının doğru olduğundan emin olun.
+```ini
+upload_max_filesize = 10M
+post_max_size = 10M
+```
+*Windows'ta php.ini genellikle PHP'nin kurulu olduğu dizindedir. Linux'ta /etc/php/8.x/cli/php.ini ve /etc/php/8.x/fpm/php.ini konumundadır.*
 
----
+### CORS Hataları
+Frontend ve Backend farklı portlarda çalıştığı için tarayıcıda CORS hataları alırsanız, Laravel tarafında config/cors.php veya .env içindeki SANCTUM_STATEFUL_DOMAINS alanına localhost:5173 adresini eklediğinizden emin olun.
+
+### Chrome Uzantısı
+Uzantıyı kullanmak için tarayıcınızda "Geliştirici Modu"nu açın ve media-extension klasörünü "Paketlenmemiş öğe yükle" seçeneği ile seçin.
 
 ## 📄 Lisans
-
-Bu proje MIT lisansı ile lisanslanmıştır.
+Bu proje açık kaynaklıdır ve MIT lisansı ile korunmaktadır.
