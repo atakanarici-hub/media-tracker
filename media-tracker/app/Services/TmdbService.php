@@ -11,7 +11,11 @@ class TmdbService
 
     public function __construct()
     {
-        $this->apiKey = config('services.tmdb.key', env('TMDB_API_KEY'));
+        $this->apiKey = config('services.tmdb.key');
+
+        if (!$this->apiKey) {
+            throw new \RuntimeException('TMDB API anahtarı tanımlı değil. Lütfen TMDB_API_KEY ortam değişkenini ayarlayın.');
+        }
     }
 
     public function search(string $query)

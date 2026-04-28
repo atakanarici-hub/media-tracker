@@ -24,19 +24,23 @@ class MediaService
         return array_values($filtered);
     }
 
-    public function getDetails(string $type, int $tmdbId)
+    /**
+     * @param bool $persist  When true, upserts the media record into the local DB.
+     *                       Must only be true for authenticated callers.
+     */
+    public function getDetails(string $type, int $tmdbId, bool $persist = false)
     {
         $tmdbData = $this->tmdbService->getDetails($type, $tmdbId);
 
-        $mediaData = [
-            'type'         => $type,
-            'title'        => $type === 'movie' ? ($tmdbData['title'] ?? '') : ($tmdbData['name'] ?? ''),
-            'poster_path'  => $tmdbData['poster_path'] ?? null,
-            'vote_average' => $tmdbData['vote_average'] ?? null,
-        ];
-
         $media = null;
-        if (isset($tmdbData['id'])) {
+        if ($persist && isset($tmdbData['id'])) {
+            $mediaData = [
+                'type'         => $type,
+                'title'        => $type === 'movie' ? ($tmdbData['title'] ?? '') : ($tmdbData['name'] ?? ''),
+                'poster_path'  => $tmdbData['poster_path'] ?? null,
+                'vote_average' => $tmdbData['vote_average'] ?? null,
+            ];
+
             $media = Media::updateOrCreate(
                 ['tmdb_id' => $tmdbData['id']],
                 $mediaData

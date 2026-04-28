@@ -31,14 +31,28 @@ class MediaController extends Controller
             return response()->json(['error' => 'Geçersiz medya türü'], 400);
         }
 
-        $details = $this->mediaService->getDetails($type, $id);
+        $id = (int) $id;
+        if ($id <= 0) {
+            return response()->json(['error' => 'Geçersiz ID'], 422);
+        }
+
+        // Only persist to the local DB when the caller is authenticated.
+        // Unauthenticated callers get a pure TMDB proxy — no DB writes.
+        $details = $this->mediaService->getDetails($type, $id, auth()->check());
         return response()->json($details);
     }
 
     public function getSeasonDetails($id, $seasonNumber)
     {
+        $id           = (int) $id;
+        $seasonNumber = (int) $seasonNumber;
+
+        if ($id <= 0 || $seasonNumber < 0) {
+            return response()->json(['error' => 'Geçersiz parametreler'], 422);
+        }
+
         $data = $this->mediaService->getSeasonDetails($id, $seasonNumber);
-        
+
         $media = \App\Models\Media::where('tmdb_id', $id)->where('type', 'tv')->first();
         if ($media && isset($data['episodes'])) {
             foreach ($data['episodes'] as &$ep) {

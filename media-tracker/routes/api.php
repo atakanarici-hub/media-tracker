@@ -8,16 +8,20 @@ use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\PostController;
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::middleware('throttle:5,1')->group(function () {
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+});
 
-// Herkese açık endpoint'ler
-Route::get('/media/search', [MediaController::class, 'search']);
-Route::get('/media/{type}/{id}', [MediaController::class, 'details']);
-Route::get('/media/tv/{id}/season/{seasonNumber}', [MediaController::class, 'getSeasonDetails']);
-Route::get('/posts', [PostController::class, 'index']);
+// Herkese açık endpoint'ler (dakikada 30 istek limiti)
+Route::middleware('throttle:30,1')->group(function () {
+    Route::get('/media/search', [MediaController::class, 'search']);
+    Route::get('/media/{type}/{id}', [MediaController::class, 'details']);
+    Route::get('/media/tv/{id}/season/{seasonNumber}', [MediaController::class, 'getSeasonDetails']);
+    Route::get('/posts', [PostController::class, 'index']);
+});
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'throttle:120,1'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', function (Request $request) {
         return $request->user();
