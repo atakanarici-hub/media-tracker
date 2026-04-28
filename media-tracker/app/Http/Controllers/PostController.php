@@ -9,7 +9,7 @@ class PostController extends Controller
 {
     public function index()
     {
-        $posts = Post::with(['user:id,name,profile_picture', 'media'])->latest()->get();
+        $posts = Post::with(['user:id,name,profile_picture', 'media'])->latest()->paginate(20);
         return response()->json($posts);
     }
 
@@ -20,11 +20,12 @@ class PostController extends Controller
             'media_id' => 'nullable|exists:medias,id'
         ]);
 
-        $post = Post::create([
-            'user_id' => $request->user()->id,
+        $post = new Post([
             'media_id' => $request->media_id,
-            'content' => $request->content
+            'content'  => $request->content,
         ]);
+        $post->user_id = $request->user()->id;
+        $post->save();
 
         return response()->json($post->load(['user:id,name,profile_picture', 'media']), 201);
     }
