@@ -94,4 +94,4 @@ Frontend ve Backend farklı portlarda çalıştığı için tarayıcıda CORS ha
 Uzantıyı kullanmak için tarayıcınızda "Geliştirici Modu"nu açın ve media-extension klasörünü "Paketlenmemiş öğe yükle" seçeneği ile seçin.
 
 ## 📄 Lisans
-Bu proje açık kaynaklıdır ve MIT lisansı ile korunmaktadır.
+Açık kaynaklıdır. Eğitim ve geliştirme amaçlı kullanılabilir.
