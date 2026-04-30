@@ -82,4 +82,4 @@ Bu klasör, platformun Laravel tabanlı REST API sunucusunu içerir.
 
 ### 📜 Lisans
 
-This project is licensed under the Media Tracker License. See the LICENSE file in the root directory for full terms and conditions.
+Bu proje Media Tracker Lisansı altında lisanslanmıştır. Tüm şartlar ve koşullar için kök dizindeki LICENSE dosyasına bakın.
