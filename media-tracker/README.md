@@ -1,34 +1,85 @@
 # 🛡️ Media Tracker - Backend API
 
-Bu klasör, platformun Laravel tabanlı REST API sunucusunu içerir.
+[English](#english) | [Türkçe](#türkçe)
 
-## 🚀 Başlangıç
+---
 
-1.  Bağımlılıkları yükleyin:
+## English
+
+This folder contains the Laravel-based REST API server for the platform.
+
+### 🚀 Getting Started
+
+1.  **Install dependencies:**
     ```bash
     composer install
     ```
-2.  `.env` dosyasını hazırlayın:
+2.  **Prepare `.env` file:**
     ```bash
     cp .env.example .env
     php artisan key:generate
     ```
-3.  Veritabanını yapılandırın ve tabloları oluşturun:
+3.  **Configure database and run migrations:**
     ```bash
     php artisan migrate
     ```
-4.  Depolama linkini oluşturun (profil fotoğrafları için):
+4.  **Create storage link** (for profile pictures):
     ```bash
     php artisan storage:link
     ```
-5.  Sunucuyu başlatın:
+5.  **Start the server:**
     ```bash
     php artisan serve
     ```
 
-## 📂 Teknolojiler
+### 📂 Technologies
+
+-   **Laravel 11**
+-   **Sanctum** (Authentication)
+-   **MySQL**
+-   **TMDB API** Integration
+
+### 📜 License
+
+This project is licensed under the Media Tracker License. See the LICENSE file in the root directory for full terms and conditions.
+
+---
+
+## Türkçe
+
+Bu klasör, platformun Laravel tabanlı REST API sunucusunu içerir.
+
+### 🚀 Başlangıç
+
+1.  **Bağımlılıkları yükleyin:**
+    ```bash
+    composer install
+    ```
+2.  **`.env` dosyasını hazırlayın:**
+    ```bash
+    cp .env.example .env
+    php artisan key:generate
+    ```
+3.  **Veritabanını yapılandırın ve tabloları oluşturun:**
+    ```bash
+    php artisan migrate
+    ```
+4.  **Depolama linkini oluşturun** (profil fotoğrafları için):
+    ```bash
+    php artisan storage:link
+    ```
+5.  **Sunucuyu başlatın:**
+    ```bash
+    php artisan serve
+    ```
+
+### 📂 Teknolojiler
 
 -   **Laravel 11**
 -   **Sanctum** (Kimlik Doğrulama)
 -   **MySQL**
 -   **TMDB API** Entegrasyonu
+
+### 📜 Lisans
+
+This project is licensed under the Media Tracker License. See the LICENSE file in the root directory for full terms and conditions.
